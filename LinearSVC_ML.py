@@ -23,7 +23,7 @@ def plot_svc(model, ax=None, plot_support=True):
         ax = plt.gca()
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
-    
+
     #create grid to evaluate model
     x = np.linspace(xlim[0], xlim[1], 30)
     y = np.linspace(ylim[0], ylim[1], 30)
@@ -34,7 +34,7 @@ def plot_svc(model, ax=None, plot_support=True):
     ax.contour(X, Y, P, colors='k',
                levels=[-1, 0 ,1], alpha = 0.5,
                linestyle=['--','-','--'])
-    
+
     if plot_support:
         ax.scatter(model.support_vectors_[:, 0],
                    model.support_vectors_[:, 1],
@@ -59,21 +59,26 @@ print(data.tail())
 #create figure and axis
 sns.scatterplot(x='I_std', y='Q_std',hue = 'Signal_type', data = data)
 plt.title('Scatter plot for Standard deviation')
+plt.grid()
 plt.show()
 
 sns.scatterplot(x='I_mean', y='Q_mean',hue = 'Signal_type', data = data)
 plt.title('Scatter plot for mean')
+plt.grid()
 plt.show()
 
 sns.scatterplot(x='I_mad', y='Q_mad',hue = 'Signal_type', data = data)
 plt.title('Scatter plot for mean absolute deviation')
+plt.grid()
 plt.show()
 
 sns.scatterplot(x='I_kurtosis', y='Q_kurtosis',hue = 'Signal_type', data = data)
 plt.title('Scatter plot for kurtosis')
+plt.grid()
 plt.show()
 
 sns.heatmap(data.corr(), annot=True)
+plt.title('Correlation heat map')
 plt.show()
 
 array = data.values
@@ -88,7 +93,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = test_size,
 
 #Linear Svc Model
 clf = svm.SVC(kernel = 'linear') #linear Kernel
-clf.fit(X_train, y_train) #train the model 
+clf.fit(X_train, y_train) #train the model
 #predict the response
 y_pred = clf.predict(X_test)
 print()
@@ -102,12 +107,9 @@ print(classification_report(y_test,y_pred))
 print()
 print()
 
-
-
-
 #KneighborsClassifierModel
 neigh = KNeighborsClassifier(n_neighbors = 3)
-#training the model 
+#training the model
 neigh.fit(X_train, y_train)
 #predict the response
 pred = neigh.predict(X_test)
@@ -120,19 +122,18 @@ print("Classification report following the tests: ")
 print(classification_report(y_test,y_pred))
 print()
 
-
 #Creating GNB object
 gnb_model = GaussianNB()
-#train the model 
+#train the model
 gnb_model.fit(X_train,y_train)
 pred_gnb = gnb_model.predict(X_test)
 #accuracy of GNB
 print("The Naive-Bayes accuracy score:",metrics.accuracy_score(y_test,pred_gnb))
 print("Confusion Matrix for the Naive-Bayes Algorithm implemented")
-print(confusion_matrix(y_test,pred_gnb))
+print(confusion_matrix(y_test, pred_gnb))
 print()
 print("Classifcation report following the tests: ")
-print(classification_report(y_test,pred_gnb))
+print(classification_report(y_test, pred_gnb))
 
 #testing on a new set of values
 X_new = [[27.2525, 0.875454,1.26262, 151.262, 1.9895, 326.21, 45.96 , 85.21 ]]

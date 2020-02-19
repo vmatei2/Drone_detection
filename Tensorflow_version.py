@@ -16,7 +16,7 @@ features = pd.read_csv('Features_tf.csv') #iris
 print(features.head())
 print(features.dtypes)
 #changing from 64 bits to 32 for use with tensorflow
-features.iloc[:,0:8] = features.iloc[:,0:8].astype(np.float32) 
+features.iloc[:,0:8] = features.iloc[:,0:8].astype(np.float32)
 print(features.dtypes)
 #converting signal types to integers
 features['Signal_type'] = features['Signal_type'].map({'WIFI':0,'BT':1,'Drone':2})
