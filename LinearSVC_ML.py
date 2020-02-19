@@ -116,7 +116,7 @@ def implement_algorithm(algorithm, X_train, y_train, X_test, y_test, algorithm_n
                       columns = ['Drone', 'Bluetooth', 'WiFi'])
     plt.figure(figsize = (5.5,4))
     sns.heatmap(cm_df, annot = True)
-    plt.title(algorithm_name, " \nAccuracy:{0:.2f}".format(metrics.accuracy_score(y_test, y_pred)))
+    plt.title(algorithm_name + " Accuracy:{0:.3f}".format(metrics.accuracy_score(y_test, y_pred)))
     plt.ylabel("True label")
     plt.xlabel("Predicted label")
     plt.show()
@@ -126,69 +126,37 @@ def implement_algorithm(algorithm, X_train, y_train, X_test, y_test, algorithm_n
     plot_classification_report(cr, algorithm_name)
     print("\n\n")
 
-#loading data from URL
-url = 'https://raw.githubusercontent.com/vmatei2/Drone_detection/master/Features.csv'
-names = ['I_std','I_mean','I_mad','Q_std', 'Q_mean'	,'Q_mad','I_kurtosis','Q_kurtosis','Signal_type']
-data = pd.read_csv(url, names = names)
+def main():
+    #loading data from URL
+    url = 'https://raw.githubusercontent.com/vmatei2/Drone_detection/master/Features.csv'
+    names = ['I_std','I_mean','I_mad','Q_std', 'Q_mean'	,'Q_mad','I_kurtosis','Q_kurtosis','Signal_type']
+    data = pd.read_csv(url, names = names)
 
-#data visualization to better understand what we're working with
-initial_data_visualization(data)
-#create figure and axis
-create_scatter_plot("I_std", "Q_std" , data = data)
-create_scatter_plot("I_mean", "Q_mean", data = data)
-create_scatter_plot("I_mad", "Q_mad", data = data)
-create_scatter_plot("I_kurtosis", "Q_kurtosis", data = data)
-create_correlation_heat_map(data)
-X_train, X_test, y_train, y_test = split_data(data, test_size = 0.3, random_state = 59)
+    #data visualization to better understand what we're working with
+    initial_data_visualization(data)
+    #create figure and axis
+    create_scatter_plot("I_std", "Q_std" , data = data)
+    create_scatter_plot("I_mean", "Q_mean", data = data)
+    create_scatter_plot("I_mad", "Q_mad", data = data)
+    create_scatter_plot("I_kurtosis", "Q_kurtosis", data = data)
+    create_correlation_heat_map(data)
+    X_train, X_test, y_train, y_test = split_data(data, test_size = 0.3, random_state = 59)
 
 
-clf = svm.SVC(kernel = 'linear') #linear Kernel
-implement_algorithm(clf, X_train, y_train, X_test, y_test, algorithm_name = "Linear SVC algorithm")
+    clf = svm.SVC(kernel = 'linear') #linear Kernel
+    implement_algorithm(clf, X_train, y_train, X_test, y_test, algorithm_name = "Linear SVC algorithm")
 
-#KneighborsClassifierModel
-neigh = KNeighborsClassifier(n_neighbors = 3)
-#training the model
-neigh.fit(X_train, y_train)
-#predict the response
-pred = neigh.predict(X_test)
-#accuracy of K neighbors
-print("KNeighbors accuracy score:", "{:.2f}".format(metrics.accuracy_score(y_test,pred)))
-print("Confusion Matrix for the KNeighborsClassifier Algorithm implemented")
-cm = confusion_matrix(y_test, pred)
-print(cm)
+    #KneighborsClassifierModel
+    neigh = KNeighborsClassifier(n_neighbors = 3)
+    implement_algorithm(neigh, X_train, y_train, X_test, y_test, algorithm_name = "K Nearest Neighbors Classifier algorithm")
 
-cm_df = pd.DataFrame(cm , index = ['Drone', 'Bluetooth', 'WiFi'],
-                     columns = ['Drone', 'Bluetooth', 'WiFi'])
-plt.figure(figsize = (5.5,4))
-sns.heatmap(cm_df, annot = True)
-plt.title('K Neigbors Classifier \nAccuracy:{0:.3f}'.format(metrics.accuracy_score(y_test,pred)))
-plt.ylabel('True label')
-plt.xlabel('Predicted label')
-plt.show()
-print("Classification report following the tests: ")
-print(classification_report(y_test, pred))
-k_neighbors_classification_report = classification_report(y_test, pred)
-plot_classification_report(k_neighbors_classification_report, 'K-Nearest Neighbors Algorithm Classification Report')
-print()
+    #Creating GNB object
+    gnb_model = GaussianNB()
+    implement_algorithm(gnb_model, X_train, y_train, X_test, y_test, "Gaussian Naive Bayes algorithm")
+    #testing on a new set of values
+    X_new = [[27.2525, 0.875454,1.26262, 151.262, 1.9895, 326.21, 45.96 , 85.21 ]]
+    ynew = gnb_model.predict(X_new)
+    print('ynew is ', ynew)
 
-implement_algorithm(neigh, X_train, y_train, X_test, y_test, "K-Nearest Neighbors algorithm")
 
-#Creating GNB object
-gnb_model = GaussianNB()
-#train the model
-gnb_model.fit(X_train,y_train)
-pred_gnb = gnb_model.predict(X_test)
-
-#accuracy of GNB
-print("The Naive-Bayes accuracy score:", "{:.2f}".format(metrics.accuracy_score(y_test,pred_gnb)))
-print("Confusion Matrix for the Naive-Bayes Algorithm implemented")
-print(confusion_matrix(y_test, pred_gnb))
-
-print("Classifcation report following the tests: ")
-naive_bayes_class_report = classification_report(y_test, pred_gnb)
-print(classification_report(y_test, pred_gnb))
-plot_classification_report(naive_bayes_class_report, 'Naive-Bayes Algorithm classification Report')
-#testing on a new set of values
-X_new = [[27.2525, 0.875454,1.26262, 151.262, 1.9895, 326.21, 45.96 , 85.21 ]]
-ynew = gnb_model.predict(X_new)
-print('ynew is ', ynew)
+main()
